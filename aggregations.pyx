@@ -94,3 +94,17 @@ cdef float64_t[:] _roll_weighted_sum_mean(const float64_t[:] values,
                     output[in_i] = NaN
 
     return output
+
+
+cdef float64_t[:] recursive_sma(const float64_t[:] values, int window):
+    cdef:
+        float64_t[:] output
+        Py_ssize_t i, in_n
+    in_n = len(values)
+    for i in range(window - 1):
+        output[i] = NaN
+    output[window] = np.average(np.asarray(values[:window]))
+    for i in range(in_n):
+        output[i + window + 1] = output[i + window] - values[i] / window + values[i + window + 1] / window
+    return output
+    
